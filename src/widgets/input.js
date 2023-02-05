@@ -5,13 +5,13 @@ export class TextField extends React.Component {
         super(props);
 
         this.state = {
-            value: '',
+            value: this.props.value ?? '',
         };
     }
 
     handleInput(event) {
         const newValue = event.target.value;
-        console.log('Value: ' + newValue);
+        // console.log('Value: ' + newValue);
         let pattern = null;
         switch (this.props.type ?? 'text') {
             case 'uint':
@@ -26,9 +26,10 @@ export class TextField extends React.Component {
         }
 
         if (pattern.test(newValue) || newValue === '') {
-            this.setState({ ...this.state, value: newValue });
-        } else {
-            this.setState({ ...this.state });
+            this.setState({ value: newValue });
+            if (this.props.onChange) {
+                this.props.onChange(newValue);
+            }
         }
     }
 
@@ -47,6 +48,17 @@ export class TextField extends React.Component {
 
 export class Button extends React.Component {
     render() {
-        return <button>{this.props.text}</button>;
+        return (
+            <button
+                disabled={ this.props.disabled }
+                onClick={(event) => {
+                    if (this.props.onClick) {
+                        this.props.onClick(event);
+                    }
+                }}
+            >
+                {this.props.text}
+            </button>
+        );
     }
 }
