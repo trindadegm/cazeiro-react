@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Button } from '../widgets/input';
+import { TextField, Button } from '../widgets/input.js';
 
 export default class Register extends React.Component {
     constructor(props) {
