@@ -6,17 +6,27 @@ export default class Register extends React.Component {
         super(props);
         this.state = {
             productName: '',
-            units: '1',
+            ammount: '1',
             value: '',
             registerEnabled: false,
+            entries: [],
         };
     }
 
     register(event) {
         const productName = this.state.productName;
-        const units = this.state.units;
+        const ammount = this.state.ammount;
         const value = this.state.value;
-        console.debug('Registering with: ' + productName + ', ' + units + ', ' + value);
+        console.debug('Registering with: ' + productName + ', ' + ammount + ', ' + value);
+        this.setState((state, _props) => {
+            return {
+                entries: state.entries.concat({
+                    productName: productName,
+                    ammount: ammount,
+                    value: value,
+                }),
+            };
+        });
     }
 
     validateStateUpdate(stateUpdate) {
@@ -24,39 +34,80 @@ export default class Register extends React.Component {
             const statePreview = { ...prevState, ...stateUpdate };
             stateUpdate.registerEnabled = (
                 statePreview.productName !== '' &&
-                statePreview.units !== '' &&
+                statePreview.ammount !== '' &&
                 statePreview.value !== ''
             );
             return stateUpdate;
         });
     }
 
+    removeEntry(index) {
+        this.setState((state, _props) => {
+            return {
+                entries:
+                    state.entries.slice(0, index).concat(
+                        state.entries.slice(index + 1, state.entries.length)
+                    ),
+            };
+        });
+    }
+
     render() {
+        let entries = this.state.entries;
+
         return (
             <div>
-                <TextField
-                    name="product_name"
-                    hint="Nome do produto"
-                    onChange={ (productName) => this.validateStateUpdate({ productName: productName }) }
-                />
-                <TextField
-                    name="units"
-                    hint="Quantidade"
-                    type="uint"
-                    value={ this.state.units }
-                    onChange={ (units) => this.validateStateUpdate({ units: units }) }
-                />
-                <TextField
-                    name="value"
-                    hint="0,00"
-                    type="money"
-                    onChange={ (value) => this.validateStateUpdate({ value: value }) }
-                />
-                <Button
-                    text="Cadastrar"
-                    disabled={ !this.state.registerEnabled }
-                    onClick={ (event) => this.register(event) }
-                />
+                <table>
+                    <tr>
+                        <th>
+                            <TextField
+                                name="product_name"
+                                hint="Nome do produto"
+                                onChange={ (productName) => this.validateStateUpdate({ productName: productName }) }
+                            />
+                        </th>
+                        <th>
+                            <TextField
+                                name="ammount"
+                                hint="Quantidade"
+                                type="uint"
+                                value={ this.state.ammount }
+                                onChange={ (ammount) => this.validateStateUpdate({ ammount: ammount }) }
+                            />
+                        </th>
+                        <th>
+                            <TextField
+                                name="value"
+                                hint="0,00"
+                                type="money"
+                                onChange={ (value) => this.validateStateUpdate({ value: value }) }
+                            />
+                        </th>
+                        <th>
+                            <Button
+                                text="Adicionar"
+                                disabled={ !this.state.registerEnabled }
+                                onClick={ (event) => this.register(event) }
+                            />
+                        </th>
+                    </tr>
+                    {entries.map((entry, i) => <tr key={i}>
+                        <th>{entry.productName}</th>
+                        <th>{entry.ammount}</th>
+                        <th>{entry.value}</th>
+                        <th>
+                            <Button
+                                text="Remover"
+                                onClick={ (_event) => this.removeEntry(i) }
+                            />
+                        </th>
+                    </tr>)}
+                </table>
+                <div>
+                    <Button
+                        text="Finalizar"
+                    />
+                </div>
             </div>
         );
     }
