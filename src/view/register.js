@@ -1,5 +1,6 @@
 import React from 'react';
 import { TextField, Button } from '../widgets/input.js';
+import Nf from '../data/nf.js';
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -13,7 +14,7 @@ export default class Register extends React.Component {
         };
     }
 
-    register(event) {
+    register(_event) {
         const productName = this.state.productName;
         const ammount = this.state.ammount;
         const value = this.state.value;
@@ -27,6 +28,18 @@ export default class Register extends React.Component {
                 }),
             };
         });
+    }
+
+    async submitNf() {
+        console.debug('Submitting...');
+        const nf = new Nf(null);
+        nf.entries = this.state.entries;
+        try {
+            const r = await nf.save();
+            console.debug('Result: ' + JSON.stringify(r));
+        } catch (e) {
+            console.dir(e);
+        }
     }
 
     validateStateUpdate(stateUpdate) {
@@ -58,54 +71,59 @@ export default class Register extends React.Component {
         return (
             <div>
                 <table>
-                    <tr>
-                        <th>
-                            <TextField
-                                name="product_name"
-                                hint="Nome do produto"
-                                onChange={ (productName) => this.validateStateUpdate({ productName: productName }) }
-                            />
-                        </th>
-                        <th>
-                            <TextField
-                                name="ammount"
-                                hint="Quantidade"
-                                type="uint"
-                                value={ this.state.ammount }
-                                onChange={ (ammount) => this.validateStateUpdate({ ammount: ammount }) }
-                            />
-                        </th>
-                        <th>
-                            <TextField
-                                name="value"
-                                hint="0,00"
-                                type="money"
-                                onChange={ (value) => this.validateStateUpdate({ value: value }) }
-                            />
-                        </th>
-                        <th>
-                            <Button
-                                text="Adicionar"
-                                disabled={ !this.state.registerEnabled }
-                                onClick={ (event) => this.register(event) }
-                            />
-                        </th>
-                    </tr>
-                    {entries.map((entry, i) => <tr key={i}>
-                        <th>{entry.productName}</th>
-                        <th>{entry.ammount}</th>
-                        <th>{entry.value}</th>
-                        <th>
-                            <Button
-                                text="Remover"
-                                onClick={ (_event) => this.removeEntry(i) }
-                            />
-                        </th>
-                    </tr>)}
+                    <thead>
+                        <tr>
+                            <th>
+                                <TextField
+                                    name="product_name"
+                                    hint="Nome do produto"
+                                    onChange={ (productName) => this.validateStateUpdate({ productName: productName }) }
+                                />
+                            </th>
+                            <th>
+                                <TextField
+                                    name="ammount"
+                                    hint="Quantidade"
+                                    type="uint"
+                                    value={ this.state.ammount }
+                                    onChange={ (ammount) => this.validateStateUpdate({ ammount: ammount }) }
+                                />
+                            </th>
+                            <th>
+                                <TextField
+                                    name="value"
+                                    hint="0,00"
+                                    type="money"
+                                    onChange={ (value) => this.validateStateUpdate({ value: value }) }
+                                />
+                            </th>
+                            <th>
+                                <Button
+                                    text="Adicionar"
+                                    disabled={ !this.state.registerEnabled }
+                                    onClick={ (event) => this.register(event) }
+                                />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {entries.map((entry, i) => <tr key={i}>
+                            <th>{entry.productName}</th>
+                            <th>{entry.ammount}</th>
+                            <th>{entry.value}</th>
+                            <th>
+                                <Button
+                                    text="Remover"
+                                    onClick={ (_event) => this.removeEntry(i) }
+                                />
+                            </th>
+                        </tr>)}
+                    </tbody>
                 </table>
                 <div>
                     <Button
                         text="Finalizar"
+                        onClick={ async (_event) => await this.submitNf() }
                     />
                 </div>
             </div>
