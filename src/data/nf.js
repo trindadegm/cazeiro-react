@@ -1,13 +1,14 @@
-// @ts-check
 import { post } from './requests.js';
 
 class Nf {
     /**
      * @param {string} nfeId
+     * @param {string} currency
      */
-    constructor(nfeId) {
+    constructor(nfeId, currency) {
         // post('http://localhost:3080', { nfeId });
         this.nfeId = nfeId;
+        this.currency = currency;
         this.entries = [];
     }
 
