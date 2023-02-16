@@ -27,7 +27,12 @@ export async function request(method, uri, data) {
             }
         });
         request.open('POST', uri);
-        request.send();
+        if (typeof(data) != 'string') {
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.send(JSON.stringify(data));
+        } else {
+            request.send(data);
+        }
     });
 }
 

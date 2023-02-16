@@ -23,8 +23,10 @@ export default class Register extends React.Component {
             return {
                 entries: state.entries.concat({
                     productName: productName,
-                    ammount: ammount,
+                    ammount: Number.parseFloat(ammount),
+                    unit: 'units',
                     value: value,
+                    unitValue: (value.replace(',', '.')/ammount.replace(',', '.')).toFixed(2).replace('.', ','),
                 }),
             };
         });
@@ -32,8 +34,12 @@ export default class Register extends React.Component {
 
     async submitNf() {
         console.debug('Submitting...');
-        const nf = new Nf(null);
+        const nf = new Nf(null, 'BRL');
         nf.entries = this.state.entries;
+        nf.value = nf.entries
+            .map(e => Number.parseFloat(e.value.replace(',', '.')))
+            .reduce((prev, curr, _i, _a) => prev + curr)
+            .toFixed(2).replace('.', ',');
         try {
             const r = await nf.save();
             console.debug('Result: ' + JSON.stringify(r));

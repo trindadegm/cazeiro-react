@@ -10,11 +10,13 @@ class Nf {
         this.nfeId = nfeId;
         this.currency = currency;
         this.entries = [];
+        this.value = '0,00';
     }
 
     async save() {
         const response = await post('http://localhost:3080/v1/nf', {
-            nfeId: this.nfeId,
+            currency: this.currency,
+            value: this.value,
             entries: this.entries
         });
         // console.debug(JSON.stringify(response));
